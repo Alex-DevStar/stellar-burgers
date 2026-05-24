@@ -4,7 +4,12 @@ import styles from './app.module.css';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from '../../services/store';
 
-import { AppHeader } from '@components';
+import {
+  AppHeader,
+  BurgerIngredient,
+  IngredientDetails,
+  Modal
+} from '@components';
 import { Preloader } from '@ui';
 import {
   fetchIngredients,
@@ -12,7 +17,7 @@ import {
   getIngredients,
   getIsLoading
 } from '../../features/burger-ingredients/burger-ingredientsSlice';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 
 const App = () => {
   /** TODO: взять переменные из стора */
@@ -20,11 +25,17 @@ const App = () => {
   const ingredients = useSelector(getIngredients);
   const error = useSelector(getError);
 
+  // const { image, price, name, _id } = ingredient;
+
   const dispatch = useDispatch();
   // const selector = useSelector()
   useEffect(() => {
     dispatch(fetchIngredients());
   }, []);
+
+  const location = useLocation();
+
+  const backgroundLocation = location.state?.backgroundLocation;
 
   return (
     <div className={styles.app}>
@@ -53,7 +64,21 @@ const App = () => {
             )
           }
         />
+        <Route path='/ingredients/:id' element={<IngredientDetails />} />
       </Routes>
+
+      {/* {backgroundLocation && (
+        <Routes>
+          <Route
+            path='/ingredients/:id'
+            element={
+              <Modal>
+                <IngredientDetails />
+              </Modal>
+            }
+          />
+        </Routes> */}
+      {/* )} */}
     </div>
   );
 };
