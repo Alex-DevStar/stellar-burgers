@@ -17,14 +17,19 @@ import {
   getIngredients,
   getIsLoading
 } from '../../features/burger-ingredients/burger-ingredientsSlice';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import {
+  Routes,
+  Route,
+  useLocation,
+  useNavigate,
+  useParams
+} from 'react-router-dom';
 
 const App = () => {
   /** TODO: взять переменные из стора */
   const isIngredientsLoading = useSelector(getIsLoading);
   const ingredients = useSelector(getIngredients);
   const error = useSelector(getError);
-
   // const { image, price, name, _id } = ingredient;
 
   const dispatch = useDispatch();
@@ -34,8 +39,11 @@ const App = () => {
   }, []);
 
   const location = useLocation();
+  const navigate = useNavigate();
+  const { id } = useParams();
 
-  const backgroundLocation = location.state?.backgroundLocation;
+  const ingredient = ingredients.find((ingredient) => ingredient._id === id);
+  const backgroundLocation = location.state?.background;
 
   return (
     <div className={styles.app}>
@@ -67,18 +75,20 @@ const App = () => {
         <Route path='/ingredients/:id' element={<IngredientDetails />} />
       </Routes>
 
-      {/* {backgroundLocation && (
+      {backgroundLocation && (
         <Routes>
+          {' '}
           <Route
             path='/ingredients/:id'
             element={
-              <Modal>
-                <IngredientDetails />
+              <Modal title={'asd'} onClose={() => navigate(-1)}>
+                {' '}
+                <IngredientDetails />{' '}
               </Modal>
             }
-          />
-        </Routes> */}
-      {/* )} */}
+          />{' '}
+        </Routes>
+      )}
     </div>
   );
 };
