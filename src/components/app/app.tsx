@@ -1,4 +1,4 @@
-import { ConstructorPage } from '@pages';
+import { ConstructorPage, Feed } from '@pages';
 import '../../index.css';
 import styles from './app.module.css';
 import { useEffect } from 'react';
@@ -17,13 +17,7 @@ import {
   getIngredients,
   getIsLoading
 } from '../../features/burger-ingredients/burger-ingredientsSlice';
-import {
-  Routes,
-  Route,
-  useLocation,
-  useNavigate,
-  useParams
-} from 'react-router-dom';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 
 const App = () => {
   /** TODO: взять переменные из стора */
@@ -33,16 +27,12 @@ const App = () => {
   // const { image, price, name, _id } = ingredient;
 
   const dispatch = useDispatch();
-  // const selector = useSelector()
   useEffect(() => {
     dispatch(fetchIngredients());
   }, []);
 
   const location = useLocation();
   const navigate = useNavigate();
-  const { id } = useParams();
-
-  const ingredient = ingredients.find((ingredient) => ingredient._id === id);
   const backgroundLocation = location.state?.background;
 
   return (
@@ -81,14 +71,19 @@ const App = () => {
           <Route
             path='/ingredients/:id'
             element={
-              <Modal title={'asd'} onClose={() => navigate(-1)}>
+              <Modal title={'Детали ингредиента'} onClose={() => navigate(-1)}>
                 {' '}
-                <IngredientDetails />{' '}
+                <IngredientDetails />
+                {''}
               </Modal>
             }
           />{' '}
         </Routes>
       )}
+
+      <Routes>
+        <Route path='/feed' element={<Feed />} />
+      </Routes>
     </div>
   );
 };

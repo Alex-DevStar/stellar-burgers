@@ -7,8 +7,16 @@ import {
   useDispatch as dispatchHook,
   useSelector as selectorHook
 } from 'react-redux';
+import { constructorSlice } from '../features/burger-constructor/burger-constructorSlice';
+import { orderSlice } from '../features/order/orderSlice';
+import { feedSlice } from '../features/feed/feedSlice';
 
-const rootReducer = combineSlices(IngredientsSlice);
+const rootReducer = combineSlices(
+  IngredientsSlice,
+  constructorSlice,
+  orderSlice,
+  feedSlice
+);
 
 const store = configureStore({
   reducer: rootReducer,
