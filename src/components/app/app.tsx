@@ -1,15 +1,10 @@
-import { ConstructorPage, Feed } from '@pages';
+import { ConstructorPage, Feed, ForgotPassword, Login, NotFound404, Profile, ProfileOrders, Register, ResetPassword } from '@pages';
 import '../../index.css';
 import styles from './app.module.css';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from '../../services/store';
 
-import {
-  AppHeader,
-  BurgerIngredient,
-  IngredientDetails,
-  Modal
-} from '@components';
+import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
 import { Preloader } from '@ui';
 import {
   fetchIngredients,
@@ -18,18 +13,26 @@ import {
   getIsLoading
 } from '../../features/burger-ingredients/burger-ingredientsSlice';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { getUser, setAuthChecked } from '../../features/user/userSlice';
+import { getCookie } from '../../utils/cookie';
+import { ProtectedRoute } from '../protected-route/protected-route';
 
 const App = () => {
   /** TODO: взять переменные из стора */
   const isIngredientsLoading = useSelector(getIsLoading);
   const ingredients = useSelector(getIngredients);
   const error = useSelector(getError);
-  // const { image, price, name, _id } = ingredient;
-
   const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch(fetchIngredients());
-  }, []);
+
+    if (getCookie('accessToken')) {
+      dispatch(getUser());
+    } else {
+      dispatch(setAuthChecked());
+    }
+  }, [dispatch]);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -39,7 +42,7 @@ const App = () => {
     <div className={styles.app}>
       <AppHeader />
 
-      <Routes>
+      <Routes location={backgroundLocation || location}>
         <Route
           path='/'
           element={
@@ -63,6 +66,60 @@ const App = () => {
           }
         />
         <Route path='/ingredients/:id' element={<IngredientDetails />} />
+        <Route path='/feed' element={<Feed />} />
+        <Route path='/feed/:number' element={<OrderInfo />} />
+
+        <Route
+          path='/login'
+          element={
+            <ProtectedRoute>
+              <Login />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/register'
+          element={
+            <ProtectedRoute>
+              <Register />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path='/forgot-password'
+          element={
+            <ProtectedRoute>
+              <ForgotPassword />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path='/reset-password'
+          element={
+            <ProtectedRoute>
+              <ResetPassword />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path='/profile'
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/profile/orders'
+          element={
+            <ProtectedRoute>
+              <ProfileOrders />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
 
       {backgroundLocation && (
@@ -78,12 +135,18 @@ const App = () => {
               </Modal>
             }
           />{' '}
+          <Route
+            path='/feed/:number'
+            element={
+              <Modal title={''} onClose={() => navigate(-1)}>
+                {' '}
+                <OrderInfo />
+                {''}
+              </Modal>
+            }
+          />
         </Routes>
       )}
-
-      <Routes>
-        <Route path='/feed' element={<Feed />} />
-      </Routes>
     </div>
   );
 };
