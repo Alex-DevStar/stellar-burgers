@@ -1,5 +1,5 @@
-import { Navigate } from 'react-router-dom';
-import { getIsAuthenticated, getUserData } from '../../features/user/userSlice';
+import { Navigate, useLocation } from 'react-router-dom';
+import { getIsAuthenticated } from '../../features/user/userSlice';
 import { useSelector } from '../../services/store';
 
 type ProtectedRouteProps = {
@@ -8,13 +8,20 @@ type ProtectedRouteProps = {
 };
 
 export const ProtectedRoute = ({
-  onlyUnAuth,
+  onlyUnAuth = false,
   children
 }: ProtectedRouteProps) => {
   const isAuth = useSelector(getIsAuthenticated);
-  const user = useSelector(getUserData);
+  const location = useLocation();
 
-  if (onlyUnAuth && isAuth) return <Navigate replace to='/' />;
-  if (!onlyUnAuth && !isAuth) return <Navigate replace to='/login' />;
+  if (onlyUnAuth && isAuth) {
+    const from = location.state?.from?.pathname || '/';
+    return <Navigate replace to={from} />;
+  }
+
+  if (!onlyUnAuth && !isAuth) {
+    return <Navigate replace to='/login' state={{ from: location }} />;
+  }
+
   return children;
 };
