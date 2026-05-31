@@ -10,12 +10,14 @@ import {
 import { constructorSlice } from '../features/burger-constructor/burger-constructorSlice';
 import { orderSlice } from '../features/order/orderSlice';
 import { feedSlice } from '../features/feed/feedSlice';
+import { userSlice } from 'src/features/user/userSlice';
 
 const rootReducer = combineSlices(
   IngredientsSlice,
   constructorSlice,
   orderSlice,
-  feedSlice
+  feedSlice,
+  userSlice
 );
 
 const store = configureStore({

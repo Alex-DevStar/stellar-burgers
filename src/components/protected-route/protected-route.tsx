@@ -7,20 +7,18 @@ import {
 import { useSelector } from '../../services/store';
 
 type ProtectedRouteProps = {
+  onlyUnAuth?: boolean;
   children: React.ReactElement;
 };
 
-export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+export const ProtectedRoute = ({
+  onlyUnAuth,
+  children
+}: ProtectedRouteProps) => {
   const isAuth = useSelector(getIsAuthenticated);
   const user = useSelector(getUserData);
-  const navigate = useNavigate();
-  if (isAuth) {
-    return;
-  }
 
-  if (user) {
-    return <Navigate replace to='/login' />;
-  }
-
+  if (onlyUnAuth && isAuth) return <Navigate replace to='/' />;
+  if (!onlyUnAuth && !isAuth) return <Navigate replace to='/login' />;
   return children;
 };
