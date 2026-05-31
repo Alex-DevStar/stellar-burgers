@@ -1,9 +1,5 @@
-import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
-import {
-  getIsAuthChecked,
-  getIsAuthenticated,
-  getUserData
-} from '../../features/user/userSlice';
+import { Navigate } from 'react-router-dom';
+import { getIsAuthenticated, getUserData } from '../../features/user/userSlice';
 import { useSelector } from '../../services/store';
 
 type ProtectedRouteProps = {

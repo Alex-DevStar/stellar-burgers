@@ -10,14 +10,16 @@ import {
 import { constructorSlice } from '../features/burger-constructor/burger-constructorSlice';
 import { orderSlice } from '../features/order/orderSlice';
 import { feedSlice } from '../features/feed/feedSlice';
-import { userSlice } from 'src/features/user/userSlice';
+import { userSlice } from '../features/user/userSlice';
+import { profileOrdersSlice } from '../features/profile-orders/profileOrdersSlice';
 
 const rootReducer = combineSlices(
   IngredientsSlice,
   constructorSlice,
   orderSlice,
   feedSlice,
-  userSlice
+  userSlice,
+  profileOrdersSlice
 );
 
 const store = configureStore({
