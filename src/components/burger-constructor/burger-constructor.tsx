@@ -28,10 +28,10 @@ export const BurgerConstructor: FC = () => {
   const isAuth = useSelector(getIsAuthenticated);
 
   useEffect(() => {
-  if (orderModalData) {
-    dispatch(clearConstructor());
-  }
-}, [orderModalData, dispatch]);
+    if (orderModalData) {
+      dispatch(clearConstructor());
+    }
+  }, [orderModalData, dispatch]);
 
   const constructorItems = {
     bun,
@@ -60,8 +60,8 @@ export const BurgerConstructor: FC = () => {
   };
 
   const closeOrderModal = () => {
-  dispatch(cleanOrderResponse());
-};
+    dispatch(cleanOrderResponse());
+  };
 
   const price = useMemo(
     () =>

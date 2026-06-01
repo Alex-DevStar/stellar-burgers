@@ -5,29 +5,28 @@ import { TIngredient } from '@utils-types';
 import { useDispatch, useSelector } from '../../services/store';
 import { getIngredients } from '../../features/burger-ingredients/burger-ingredientsSlice';
 import { useParams } from 'react-router-dom';
-import { fetchOrderByNumber, getCurrentOrder, getCurrentOrderRequest } from '../../features/order/orderSlice';
+import {
+  fetchOrderByNumber,
+  getCurrentOrder,
+  getCurrentOrderRequest
+} from '../../features/order/orderSlice';
 
 export const OrderInfo: FC = () => {
   /** TODO: взять переменные orderData и ingredients из стора */
   const ingredients: TIngredient[] = useSelector(getIngredients);
   const { number } = useParams();
-  
+
   const dispatch = useDispatch();
   useEffect(() => {
+    if (number) {
+      dispatch(fetchOrderByNumber(Number(number)));
+    }
+  }, [dispatch, number]);
 
-  if (number) {
+  const currentOrder = useSelector(getCurrentOrder);
+  const currentOrderRequest = useSelector(getCurrentOrderRequest);
 
-    dispatch(fetchOrderByNumber(Number(number)));
-
-  }
-
-}, [dispatch, number]);
-
-const currentOrder = useSelector(getCurrentOrder);
-const currentOrderRequest = useSelector(getCurrentOrderRequest);
-
-const orderData = currentOrder;
-
+  const orderData = currentOrder;
 
   /* Готовим данные для отображения */
   const orderInfo = useMemo(() => {
