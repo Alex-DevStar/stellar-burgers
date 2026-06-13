@@ -56,3 +56,5 @@ export const {
   removeBun,
   clearConstructor
 } = constructorSlice.actions;
+export default constructorSlice.reducer;
+

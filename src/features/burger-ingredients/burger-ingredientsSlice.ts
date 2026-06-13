@@ -38,7 +38,6 @@ export const IngredientsSlice = createSlice({
       .addCase(fetchIngredients.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message!;
-        // вернуться к обработке ощибки при понимании входных данных
       })
       .addCase(fetchIngredients.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -49,3 +48,4 @@ export const IngredientsSlice = createSlice({
 
 export const { getIsLoading, getIngredients, getError } =
   IngredientsSlice.selectors;
+export default IngredientsSlice.reducer;
