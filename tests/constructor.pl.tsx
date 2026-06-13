@@ -5,11 +5,10 @@ const MAIN_NAME = 'Биокотлета';
 
 test.describe('Страница конструктора бургера', () => {
   test.beforeEach(async ({ page }) => {
-    // Верни HAR после того, как добьёшь селекторы и убедишься,
-    // что HAR не ломает загрузку страницы
-    // await page.routeFromHAR('./tests/hars/constructor.har', {
-    //   notFound: 'fallback'
-    // });
+   await page.routeFromHAR('./tests/hars/order.har', {
+  url: '**/api/**',
+  notFound: 'fallback'
+});
 
     await page.goto('/', { waitUntil: 'domcontentloaded' });
   });
@@ -68,11 +67,10 @@ await expect(page.getByText('Детали ингредиента')).not.toBeVisi
 
 test.describe('Оформление заказа', () => {
   test.beforeEach(async ({ page, context }) => {
-    // Верни HAR после того, как добьёшь селекторы и проверишь,
-    // что order.har записан корректно
-    // await page.routeFromHAR('./tests/hars/order.har', {
-    //   notFound: 'fallback'
-    // });
+    await page.routeFromHAR('./tests/hars/order.har', {
+  url: '**/api/**',
+  notFound: 'fallback'
+});
 
     await context.addCookies([
       {
@@ -102,28 +100,40 @@ test.describe('Оформление заказа', () => {
     }
   });
 
-  test.skip('создание заказа: сборка бургера, открытие модалки с номером и очистка конструктора', async ({
+  test('создание заказа: сборка бургера, открытие модалки с номером и очистка конструктора', async ({
   page
 }) => {
-    const bunCard = page
-      .locator('li')
-      .filter({ has: page.getByText(BUN_NAME) })
-      .first();
+  const bunCard = page
+    .locator('li')
+    .filter({ has: page.getByText(BUN_NAME) })
+    .first();
 
-    await bunCard.getByRole('button', { name: 'Добавить' }).click();
+  await bunCard.getByRole('button', { name: 'Добавить' }).click();
 
-    const mainCard = page
-      .locator('li')
-      .filter({ has: page.getByText(MAIN_NAME) })
-      .first();
+  const mainCard = page
+    .locator('li')
+    .filter({ has: page.getByText(MAIN_NAME) })
+    .first();
 
-    await mainCard.getByRole('button', { name: 'Добавить' }).click();
+  await mainCard.getByRole('button', { name: 'Добавить' }).click();
 
-    await page.getByRole('button', { name: 'Оформить заказ' }).click();
+  await page.getByRole('button', { name: 'Оформить заказ' }).click();
 
-    await expect(page.getByText(/^[0-9]+$/)).toBeVisible();
+await expect(page.locator('#modals')).toBeVisible();
 
-await page.locator('#modals button').last().click();
-    await expect(page.getByText(/^[0-9]+$/)).not.toBeVisible();
-  });
+await expect(page.getByText('идентификатор заказа')).toBeVisible({
+  timeout: 15000
+});
+
+await expect(page.locator('#modals h2')).toContainText(/[0-9]+/, {
+  timeout: 15000
+});
+
+  await expect(page.getByText('Выберите булки')).toHaveCount(2);
+  await expect(page.getByText('Выберите начинку')).toBeVisible();
+
+  await page.locator('#modals button').click();
+
+  await expect(page.getByText('идентификатор заказа')).not.toBeVisible();
+});
 });
