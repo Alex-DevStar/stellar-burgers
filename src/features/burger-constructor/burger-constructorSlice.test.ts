@@ -10,7 +10,11 @@ import reducer, {
 } from './burger-constructorSlice';
 
 jest.mock('@reduxjs/toolkit', () => {
-  const actual = jest.requireActual('@reduxjs/toolkit');
+  const actual = jest.requireActual('@reduxjs/toolkit') as Record<
+    string,
+    unknown
+  >;
+
   return {
     ...actual,
     nanoid: () => 'test-id'

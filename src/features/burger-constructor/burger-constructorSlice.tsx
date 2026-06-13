@@ -57,4 +57,3 @@ export const {
   clearConstructor
 } = constructorSlice.actions;
 export default constructorSlice.reducer;
-
