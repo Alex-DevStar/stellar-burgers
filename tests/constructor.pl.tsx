@@ -54,22 +54,52 @@ test.describe('Страница конструктора бургера', () => 
 
     await ingredientCard.getByText(BUN_NAME).click();
 
-    await expect(page.getByText('Детали ингредиента')).toBeVisible();
-    await expect(
-      page.getByRole('heading', { name: /Краторная булка/i })
-    ).toBeVisible();
-    await expect(page.getByText('Калории, ккал')).toBeVisible();
-    await expect(page.getByText('Белки, г')).toBeVisible();
-    await expect(page.getByText('Жиры, г')).toBeVisible();
-    await expect(page.getByText('Углеводы, г')).toBeVisible();
+    const modal = page.locator('#modals');
+
+await expect(modal.getByText('Детали ингредиента')).toBeVisible();
+await expect(
+  modal.getByRole('heading', { name: /Краторная булка/i })
+).toBeVisible();
+await expect(modal.getByText('Калории, ккал')).toBeVisible();
+await expect(modal.getByText('Белки, г')).toBeVisible();
+await expect(modal.getByText('Жиры, г')).toBeVisible();
+await expect(modal.getByText('Углеводы, г')).toBeVisible();
   });
 });
 
 test.describe('Оформление заказа', () => {
   test.beforeEach(async ({ page, context }) => {
-    await page.routeFromHAR('./tests/hars/order.har', {
-      url: '**/api/**',
+    await page.routeFromHAR('./tests/hars/constructor.har', {
+      url: '**/api/ingredients',
       notFound: 'fallback'
+    });
+
+    await page.route('**/api/auth/user', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          user: {
+            email: 'alex.qa.1406@test.com',
+            name: 'alex'
+          }
+        })
+      });
+    });
+
+    await page.route('**/api/orders', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          order: {
+            number: 12345
+          },
+          name: 'test order'
+        })
+      });
     });
 
     await context.addCookies([
@@ -86,11 +116,7 @@ test.describe('Оформление заказа', () => {
     });
 
     await page.goto('/', { waitUntil: 'domcontentloaded' });
-
-    await page.waitForResponse(
-      (response) =>
-        response.url().includes('/api/auth/user') && response.status() === 200
-    );
+    await page.waitForLoadState('networkidle');
   });
 
   test.afterEach(async ({ page, context }) => {
@@ -122,26 +148,25 @@ test.describe('Оформление заказа', () => {
 
     await mainCard.getByRole('button', { name: 'Добавить' }).click();
 
+    const constructorArea = page.locator('section').filter({
+      has: page.getByText('Оформить заказ')
+    });
+
+    await expect(constructorArea.getByText(BUN_NAME)).toHaveCount(2);
+await expect(constructorArea.getByText(MAIN_NAME)).toHaveCount(1);
+
     await page.getByRole('button', { name: 'Оформить заказ' }).click();
 
-    await page.waitForResponse(
-      (response) =>
-        response.url().includes('/api/orders') && response.status() === 200
-    );
+    const modal = page.locator('#modals');
 
-    await expect(page.getByText('идентификатор заказа')).toBeVisible({
-      timeout: 15000
-    });
+    await expect(modal.getByText('идентификатор заказа')).toBeVisible();
+    await expect(modal.getByText('12345')).toBeVisible();
 
-    await expect(page.locator('#modals h2')).toContainText(/[0-9]+/, {
-      timeout: 15000
-    });
+    await expect(constructorArea.getByText(BUN_NAME)).not.toBeVisible();
+    await expect(constructorArea.getByText(MAIN_NAME)).not.toBeVisible();
 
-    await expect(page.getByText('Выберите булки')).toHaveCount(2);
-    await expect(page.getByText('Выберите начинку')).toBeVisible();
+    await modal.locator('button').click();
 
-    await page.locator('#modals button').click();
-
-    await expect(page.getByText('идентификатор заказа')).not.toBeVisible();
+    await expect(modal.getByText('идентификатор заказа')).not.toBeVisible();
   });
 });
