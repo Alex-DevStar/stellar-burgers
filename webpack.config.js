@@ -83,7 +83,8 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, './dist'),
-    filename: 'bundle.js'
+    filename: 'bundle.js',
+    publicPath: 'https://alex-devstar.github.io/stellar-burgers/'
   },
   devServer: {
     static: path.join(__dirname, './dist'),
