@@ -40,6 +40,11 @@ jobs:
           cache: npm
 
       - run: npm ci
+      - run: echo "API = $BURGER_API_URL"
+
+        env:
+
+          BURGER_API_URL: ${{ vars.BURGER_API_URL }}
 
       - run: npm run build
         env:
